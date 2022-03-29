@@ -144,3 +144,10 @@ dmypy.json
 .history/
 
 .mypy_cache
+
+# Dev/yatube_project/.gitignore
+
+.vscode/
+/.vscode
+
+yatube/posts/migrations/
