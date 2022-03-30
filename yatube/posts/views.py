@@ -50,7 +50,6 @@ def profile(request, username):
 
 
 def post_detail(request, post_id):
-
     post = Post.objects.select_related('author', 'group').get(id=post_id)
     post_count = Post.objects.filter(author=post.author).count()
     post_list = post.author.posts.all()
@@ -65,16 +64,13 @@ def post_detail(request, post_id):
 
 @login_required
 def post_create(request):
-
     if request.method == 'POST':
         form = PostForm(request.POST)
-
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             form.save()
             return redirect('posts:profile', request.user)
-        return render(request, 'posts/post_create.html', {'form': form})
     form = PostForm()
     return render(request, 'posts/post_create.html', {'form': form})
 
@@ -89,12 +85,9 @@ def post_edit(request, post_id):
         form = PostForm(request.POST or None, instance=post)
         if form.is_valid():
             post = form.save(commit=False)
-            post.text = form.cleaned_data['text']
             post.author = request.user
             form.save()
             return redirect('posts:post_detail', post_id)
-        return render(request, 'posts/post_create.html',
-                      {'form': form, 'is_edit': is_edit})
     form = PostForm(instance=post)
     return render(request, 'posts/post_create.html', {'form': form,
                   'is_edit': is_edit})
