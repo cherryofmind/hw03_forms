@@ -90,7 +90,6 @@ def post_edit(request, post_id):
         if form.is_valid():
             post = form.save(commit=False)
             post.text = form.cleaned_data['text']
-            post.group = form.cleaned_data['group']
             post.author = request.user
             form.save()
             return redirect('posts:post_detail', post_id)

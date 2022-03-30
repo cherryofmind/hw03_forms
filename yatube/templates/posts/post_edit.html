@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Редактировать запись{% endblock %}
 {% block content %}
-
   <div class="container py-5">
     <div class="row justify-content-center">
       <div class="col-md-8 p-5">
         <div class="card">
-          <div class="card-header">Новый пост</div>
+          <div class="card-header">Редактировать пост №{{ post.id }}</div>
           <div class="card-body">
             <form method="post" action="{% url 'posts:post_edit' %}">
               {% csrf_token %}
@@ -26,7 +25,7 @@
                     ---------
                   </option>
                   <option value="1">
-                    Группа: Лев Толстой – зеркало русской революции
+                    Группа: {{group}}
                   </option>
                 </select>
                 <small id="id_group-help" class="form-text text-muted">Группа, к которой будет относиться пост</small>
