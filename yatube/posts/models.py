@@ -15,14 +15,14 @@ class Post(models.Model):
         'Group',
         blank=True, null=True,
         on_delete=models.SET_NULL,
-        related_name='group')
-
-    def __str__(self):
-        # выводим текст поста
-        return self.text
+        related_name='posts')
 
     class Meta:
         ordering = ("-pub_date",)
+
+    def __str__(self):
+        # выводим текст поста
+        return self.text[:15]
 
 
 class Group(models.Model):
