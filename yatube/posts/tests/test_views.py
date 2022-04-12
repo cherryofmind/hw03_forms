@@ -13,12 +13,12 @@ class PostPagesTests(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.author = User.objects.create_user(
-            username='test_user',
-            password='1234567'
+            username='user',
+            password='password'
         )
         cls.random_user = User.objects.create_user(
-            username='randomuser',
-            password='1234567'
+            username='user2',
+            password='22227'
         )
         cls.group = Group.objects.create(
             title='Тестовый заголовок',
@@ -57,9 +57,9 @@ class PostPagesTests(TestCase):
                 'posts/profile.html',
             reverse('posts:post_detail', kwargs={'post_id': 1}):
                 'posts/post_detail.html',
-            reverse('posts:post_create'): 'posts/create_post.html',
-            reverse('posts:post_edit', kwargs={'post_id': 1}):
-                'posts/create_post.html',
+            reverse('posts:post_create'): 'posts/post_create.html',
+            reverse('posts:post_edit', kwargs={'post_id': self.post.id}):
+                'posts/post_create.html',
         }
         # Проверяем, что при обращении к name вызывается правильный HTML-шаблон
         for reverse_name, template in templates_pages_names.items():
