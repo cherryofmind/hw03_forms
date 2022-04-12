@@ -12,44 +12,64 @@ class PostPagesTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='auth')
+        cls.author = User.objects.create_user(
+            username='test_user',
+            password='1234567'
+        )
+        cls.random_user = User.objects.create_user(
+            username='randomuser',
+            password='1234567'
+        )
         cls.group = Group.objects.create(
-            title='Тестовый заголовок группы',
-            slug='Something'
+            title='Тестовый заголовок',
+            slug='test-slug',
+            description='Тестовый текст',
+        )
+        cls.new_group = Group.objects.create(
+            title='Тестовый заголовок 1',
+            slug='test_slug_1',
+            description='Тестовый текст 1',
         )
         cls.post = Post.objects.create(
-            author=cls.user,
-            text='Тестовый текст',
-            group=cls.group
+            author=cls.author,
+            group=cls.group,
+            text='заголовок',
+            pub_date='22.10.2022',
         )
+        cls.guest_client = Client()
+        cls.authorized_client = Client()
+        cls.authorized_client.force_login(cls.author)
+        cls.random_client = Client()
+        cls.random_client.force_login(cls.random_user)
 
     def setUp(self):
         self.user = User.objects.create_user(username='HasNoName')
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
-    def test_pages_uses_correct_template(self):
-        """URL-адрес использует соответствующий шаблон.
-        И проверяем, что при обращении к name вызывается
-        соответствующий HTML-шаблон.
-        """
-        templates_page_names = {
-            reverse('posts:index'): 'posts/index.html',
-            'posts/post_create.html': reverse('post_create'),
-            'posts/group_list.html': (
-                reverse('group_posts', kwargs={'slug': 'test_slug'})
-            ),
-            'posts/profile.html': reverse('profile'),
-            'posts/post_detail.html': reverse('post_detail')
+    def test_pages_uses_correct_templates(self):
+        """URL-адрес использует соответствующий шаблон."""
+        templates_pages_names = {
+            reverse('posts:main'): 'posts/index.html',
+            reverse('posts:group_list', kwargs={'slug': 'test-slug'}):
+                'posts/group_list.html',
+            reverse('posts:profile', kwargs={'username': self.author}):
+                'posts/profile.html',
+            reverse('posts:post_detail', kwargs={'post_id': 1}):
+                'posts/post_detail.html',
+            reverse('posts:post_create'): 'posts/create_post.html',
+            reverse('posts:post_edit', kwargs={'post_id': 1}):
+                'posts/create_post.html',
         }
-        for template, reverse_name in templates_page_names.items():
-            with self.subTest(template=template):
+        # Проверяем, что при обращении к name вызывается правильный HTML-шаблон
+        for reverse_name, template in templates_pages_names.items():
+            with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertTemplateUsed(response, template)
 
     def test_post_index_page_show_correct_context(self):
         """Шаблон главной страницы сформирован с правильным контекстом."""
-        response = self.authorized_client.get(reverse('posts:index'))
+        response = self.authorized_client.get(reverse('posts:main'))
         first_object = response.context['page_obj'][0]
         context_objects = {
             self.author: first_object.author,
